@@ -29,6 +29,6 @@
     },
     "minimum-stability": "dev",
     "autoload": {
-        "psr-4": {"G4\\Storage\\": "src/G4/Storage"}
+        "psr-4": {"G4\\Storage\\": "src/"}
     }
 }
