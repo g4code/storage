@@ -1,0 +1,34 @@
+{
+    "name": "g4/storage",
+    "homepage": "http://g4fw.com/storage",
+    "description": "G4 file storage and manipulation package",
+    "license": "MIT",
+    "keywords": [
+        "g4code",
+        "storage",
+        "file",
+        "ftp",
+        "s3"
+    ],
+    "authors": [
+        {
+            "name": "Dejan Samardzija",
+            "email": "samardzija.dejan@gmail.com"
+        },
+        {
+            "name": "Drasko Gomboc",
+            "email": "drasko.gomboc@gmail.com"
+        },
+        {
+            "name": "Ivan Krickovic",
+            "email": "ivan.krickovic@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {"G4\\Storage\\": "src/G4/Storage"}
+    }
+}
