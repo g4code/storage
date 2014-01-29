@@ -82,9 +82,6 @@ class Ftp extends DriverAbstract
 
     public function put($localFile, $remoteFile, $deleteSource = false)
     {
-        // save local files if we are going to delete them
-        $this->_addLocalFile($localFile);
-
         $localFile = realpath($localFile);
 
         if(false === $localFile) {
