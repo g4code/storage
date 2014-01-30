@@ -79,7 +79,7 @@ class File extends DriverAbstract
 
         $dir = $this->_rootRemote . DIRECTORY_SEPARATOR . dirname($file);
 
-        if(!file_exists($dir) && !mkdir($dir, 644, true)) {
+        if(!file_exists($dir) && !mkdir($dir, 0755, true)) {
             throw new \Exception('Remote path is not writable');
         }
 
