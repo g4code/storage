@@ -8,6 +8,8 @@ abstract class DriverAbstract implements DriverInterface
 
     private $_options = array();
 
+    private $_optionsSet = false;
+
     private $_rootLocal;
 
     private $_localFiles = array();
@@ -30,6 +32,10 @@ abstract class DriverAbstract implements DriverInterface
      */
     protected function _processOptions()
     {
+        if(true === $this->_areOptionsSet()) {
+            return true;
+        }
+
         $options = $this->getOptions();
 
         if(empty($options)) {
@@ -50,6 +56,19 @@ abstract class DriverAbstract implements DriverInterface
             ? (bool) $options['delete_local_file']
             : true;
 
+        $this->_markOptionsAsSet();
+
+        return $this;
+    }
+
+    protected function _areOptionsSet()
+    {
+        return $this->_optionsSet;
+    }
+
+    protected function _markOptionsAsSet()
+    {
+        $this->_optionsSet = true;
         return $this;
     }
 
@@ -83,6 +102,8 @@ abstract class DriverAbstract implements DriverInterface
 
     protected function _buildLocalPath($file)
     {
+        $this->_processOptions();
+
         $base = basename($file);
 
         $dir = $this->_rootLocal . DIRECTORY_SEPARATOR . dirname($file);
