@@ -28,7 +28,6 @@ class Ftp extends DriverAbstract
     public function __destruct()
     {
         parent::__destruct();
-        ftp_close($this->_connect());
     }
 
     /**
