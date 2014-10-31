@@ -5,6 +5,10 @@ Storage
 
 ## Install
 
+```sh
+composer require g4/storage
+```
+
 ## Usage
 
 ## Development
