@@ -23,7 +23,10 @@ abstract class DriverAbstract implements DriverInterface
         }
 
         foreach($this->_localFiles as $file) {
-            unlink($this->_buildLocalPath($file));
+            $filePath = $this->_buildLocalPath($file);
+            if(realpath($filePath)) {
+                unlink($filePath);
+            }
         }
     }
 
@@ -111,6 +114,9 @@ abstract class DriverAbstract implements DriverInterface
         if(!file_exists($dir) && !mkdir($dir, 644, true)) {
             throw new \Exception('Local path is not writable');
         }
+
+        $toTouch = $dir . DIRECTORY_SEPARATOR . $base;
+        @touch($toTouch);
 
         $path = realpath($dir) . DIRECTORY_SEPARATOR . $base;
 
