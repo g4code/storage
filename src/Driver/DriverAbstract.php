@@ -23,7 +23,10 @@ abstract class DriverAbstract implements DriverInterface
         }
 
         foreach($this->_localFiles as $file) {
-            unlink($this->_buildLocalPath($file));
+            $localPath = $this->_buildLocalPath($file);
+            if(file_exists($localPath)){
+                unlink($localPath);
+            }
         }
     }
 
