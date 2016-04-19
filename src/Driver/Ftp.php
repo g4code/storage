@@ -103,6 +103,10 @@ class Ftp extends DriverAbstract
 
         $done = ftp_put($this->_connect(), $remoteFile, $localFile, FTP_BINARY);
 
+        if (filesize($localFile) != ftp_size($this->_connect(), $remoteFile)) {
+            throw new \Exception('FTP uploaded remote file size mismatch');
+        }
+
         ftp_chdir($this->_connect(), '/');
 
         return $done;
