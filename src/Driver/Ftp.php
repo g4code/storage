@@ -126,7 +126,7 @@ class Ftp extends DriverAbstract
 
     private function _connect()
     {
-        if(is_resource($this->_connection)) {
+        if(!is_resource($this->_connection)) {
             $this->_connectionFactory();
         }
 
