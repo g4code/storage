@@ -56,3 +56,5 @@ ehthumbs.db
 Icon?
 Thumbs.db
 .idea/
+.vagrant/
+playground

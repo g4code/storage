@@ -2,7 +2,7 @@
 
 namespace G4\Storage\Driver;
 
-use G4\Storage\Driver\DriverAbstract;
+use G4\Storage\Ftp\Directory;
 
 class Ftp extends DriverAbstract
 {
@@ -87,19 +87,9 @@ class Ftp extends DriverAbstract
             throw new \Exception('Local file path is invalid');
         }
 
-        $dir = dirname($remoteFile);
+        (new Directory($this->_connect(), $remoteFile))->create();
 
-        if(!@ftp_chdir($this->_connect(), $dir)) {
-
-            $parts = array_filter(explode('/', $dir)); // foo/bar/bat
-
-            foreach($parts as $part){
-                if(!@ftp_chdir($this->_connect(), $part)){
-                    ftp_mkdir($this->_connect(), $part);
-                    ftp_chdir($this->_connect(), $part);
-                }
-            }
-        }
+        ftp_chdir($this->_connect(), dirname($remoteFile));
 
         $done = ftp_put($this->_connect(), $remoteFile, $localFile, FTP_BINARY);
 
