@@ -70,11 +70,9 @@ class Ftp extends DriverAbstract
         // save local files if we are going to delete them
         $this->_addLocalFile($localFile);
 
-        $conn = $this->_connect();
-
         $localFile = $this->_buildLocalPath($localFile);
 
-        return ftp_get($conn, $localFile, $remoteFile, FTP_BINARY)
+        return (ftp_size($this->_connect(), $remoteFile) > -1) && ftp_get($this->_connect(), $localFile, $remoteFile, FTP_BINARY)
             ? $localFile
             : false;
     }
