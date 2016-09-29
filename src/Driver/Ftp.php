@@ -109,7 +109,9 @@ class Ftp extends DriverAbstract
 
     public function delete($remoteFile)
     {
-        return ftp_delete($this->_connect(), $remoteFile);
+        return (ftp_size($this->_connect(), $remoteFile) > -1)
+            ? ftp_delete($this->_connect(), $remoteFile)
+            : true;
     }
 
     private function _connect()
