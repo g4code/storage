@@ -33,9 +33,7 @@ class Directory
 
     private function exists($directoryPath)
     {
-        return in_array(
-            $directoryPath,
-            ftp_nlist($this->connection, dirname($directoryPath))
-        );
+        $list = ftp_nlist($this->connection, dirname($directoryPath));
+        return is_array($list) && in_array($directoryPath, $list);
     }
 }
