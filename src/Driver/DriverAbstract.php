@@ -19,7 +19,7 @@ abstract class DriverAbstract implements DriverInterface
     public function __destruct()
     {
         if(!$this->_deleteLocalFileOnExit || !is_array($this->_localFiles) || empty($this->_localFiles)) {
-            return false;
+            return;
         }
 
         foreach($this->_localFiles as $file) {
@@ -112,7 +112,7 @@ abstract class DriverAbstract implements DriverInterface
         $dir = $this->_rootLocal . DIRECTORY_SEPARATOR . dirname($file);
 
         if(!file_exists($dir) && !mkdir($dir, 644, true)) {
-            throw new \Exception('Local path is not writable');
+            throw new \Exception(sprintf('Local path "%s" is not writable', $dir));
         }
 
         $toTouch = $dir . DIRECTORY_SEPARATOR . $base;
