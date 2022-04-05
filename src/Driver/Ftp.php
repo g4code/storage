@@ -25,6 +25,11 @@ class Ftp extends DriverAbstract
 
     private $_pass;
 
+    /**
+     * @var bool
+     */
+    private $passive = false;
+
     public function __destruct()
     {
         parent::__destruct();
@@ -57,6 +62,10 @@ class Ftp extends DriverAbstract
         $this->_timeout = isset($options['timeout']) ? intval($options['timeout']) : 0;
         if(!$this->_timeout) {
             $this->_timeout = self::DEFAULT_TIMEOUT;
+        }
+
+        if(isset($options['passive']) && $options['passive']) {
+            $this->passive = true;
         }
 
         $this->_user = isset($options['user']) ? $options['user'] : '';
@@ -137,6 +146,10 @@ class Ftp extends DriverAbstract
 
         if(!$login) {
             throw new \Exception('Wrong user/pass combination failed to autheticate');
+        }
+
+        if ($this->passive) {
+            ftp_pasv($this->_connection, true);
         }
     }
 }
