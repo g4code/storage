@@ -30,6 +30,8 @@ class Ftp extends DriverAbstract
      */
     private $passive = false;
 
+    private $useFtpSiteCommand;
+
     public function __destruct()
     {
         parent::__destruct();
@@ -71,6 +73,8 @@ class Ftp extends DriverAbstract
         $this->_user = isset($options['user']) ? $options['user'] : '';
         $this->_pass = isset($options['pass']) ? $options['pass'] : '';
 
+        $this->useFtpSiteCommand = isset($options['use_ftp_site_cmd']) ? $options['use_ftp_site_cmd'] : false;
+
         return $this;
     }
 
@@ -88,13 +92,15 @@ class Ftp extends DriverAbstract
 
     public function put($localFile, $remoteFile, $deleteSource = false)
     {
+        $this->_processOptions();
+
         $localFile = realpath($localFile);
 
         if(false === $localFile) {
             throw new \Exception('Local file path is invalid');
         }
 
-        (new Directory($this->_connect(), $remoteFile))->create();
+        (new Directory($this->_connect(), $remoteFile, $this->useFtpSiteCommand))->create();
 
         ftp_chdir($this->_connect(), dirname($remoteFile));
 
