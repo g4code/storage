@@ -25,7 +25,7 @@ class Directory
     {
         if($this->useFtpSiteCommand) {
             ftp_site($this->connection, "MKDIR $this->directoryPath");
-            return $this;
+            return;
         }
 
         $pathPart = '';
