@@ -13,7 +13,7 @@ class Directory
 
     private $useFtpSiteCommand;
 
-    public function __construct($connection, $filePath, $useFtpSiteCommand)
+    public function __construct($connection, $filePath, $useFtpSiteCommand = false)
     {
         $this->connection       = $connection;
         $this->directoryPath    = dirname($filePath);
@@ -24,15 +24,16 @@ class Directory
     public function create()
     {
         if($this->useFtpSiteCommand) {
-            ftp_site($this->connection, "SITE MKDIR $this->directoryPath");
-        } else {
-            $pathPart = '';
-            if (!$this->exists($this->directoryPath)) {
-                foreach ($this->pathParts as $part) {
-                    $pathPart .= '/' . $part;
-                    if (!$this->exists($pathPart)) {
-                        ftp_mkdir($this->connection, $pathPart);
-                    }
+            ftp_site($this->connection, "MKDIR $this->directoryPath");
+            return $this;
+        }
+
+        $pathPart = '';
+        if(!$this->exists($this->directoryPath)) {
+            foreach($this->pathParts as $part){
+                $pathPart .= '/' . $part;
+                if(!$this->exists($pathPart)){
+                    ftp_mkdir($this->connection, $pathPart);
                 }
             }
         }
