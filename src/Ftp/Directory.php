@@ -11,15 +11,23 @@ class Directory
 
     private $pathParts;
 
-    public function __construct($connection, $filePath)
+    private $useFtpSiteCommand;
+
+    public function __construct($connection, $filePath, $useFtpSiteCommand = false)
     {
         $this->connection       = $connection;
         $this->directoryPath    = dirname($filePath);
         $this->pathParts        = array_filter(explode('/', $this->directoryPath)); // foo/bar/bat
+        $this->useFtpSiteCommand = $useFtpSiteCommand;
     }
 
     public function create()
     {
+        if($this->useFtpSiteCommand) {
+            ftp_site($this->connection, "MKDIR $this->directoryPath");
+            return;
+        }
+
         $pathPart = '';
         if(!$this->exists($this->directoryPath)) {
             foreach($this->pathParts as $part){
