@@ -78,16 +78,39 @@ class Ftp extends DriverAbstract
         return $this;
     }
 
-    public function get($localFile, $remoteFile, $deleteSource = false)
+    public function get($localFileName, $remoteFile, $deleteSource = false, $localFileKey = null)
     {
         // save local files if we are going to delete them
-        $this->_addLocalFile($localFile);
+        $this->_addLocalFile($localFileName, $localFileKey);
 
-        $localFile = $this->_buildLocalPath($localFile);
+        $localFile = $this->_buildLocalPath($localFileName);
+        $this->setLocalFilePath($localFileName, $localFile);
 
-        return (ftp_size($this->_connect(), $remoteFile) > -1) && ftp_get($this->_connect(), $localFile, $remoteFile, FTP_BINARY)
+        $ftpSize = ftp_size($this->_connect(), $remoteFile) > -1;
+        $ftpDownloaded = ftp_get($this->_connect(), $localFile, $remoteFile, FTP_BINARY);
+
+        $done = ($ftpSize && $ftpDownloaded)
             ? $localFile
             : false;
+
+        //since we're allowing copying of zero size file, we want to know the size of saved local file
+        $this->setLocalFileSize($localFileName, filesize($localFile));
+
+        if(!$done) {
+            $msgs = [];
+            if(!$ftpSize) {
+                $msgs[] = 'remote does not exist';
+            }
+            if(!$ftpDownloaded) {
+                $msgs[] = 'not downloaded';
+            }
+            $msg = 'File ' . implode(' and ', $msgs);
+
+            //if there was any issue at this point, we want to save it in localFile array and use it if needed more info
+            $this->setLocalFileError($localFileName, 404, $msg);
+        }
+
+        return $done ? $localFile : false;
     }
 
     public function put($localFile, $remoteFile, $deleteSource = false)
