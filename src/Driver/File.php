@@ -28,18 +28,40 @@ class File extends DriverAbstract
         return $this;
     }
 
-    public function get($localFile, $remoteFile, $deleteSource = false)
+    public function get($localFileName, $remoteFile, $deleteSource = false, $localFileKey = null)
     {
         // save local files if we are going to delete them
-        $this->_addLocalFile($localFile);
+        // for identification purposes we use optional $localFileKey
+        $this->_addLocalFile($localFileName, $localFileKey);
 
-        $localFile = $this->_buildLocalPath($localFile);
+        $localFile = $this->_buildLocalPath($localFileName);
+        $this->setLocalFilePath($localFileName, $localFile);
 
         $remoteFile = $this->_buildRemotePath($remoteFile);
 
-        $done = (file_exists($remoteFile) && is_readable($remoteFile))
+        $remoteExists = file_exists($remoteFile);
+        $remoteIsReadable = is_readable($remoteFile);
+
+        $done = ($remoteExists && $remoteIsReadable)
             ? copy($remoteFile, $localFile)
             : false;
+
+        //since we're allowing copying of zero size file, we want to know the size of saved local file
+        $this->setLocalFileSize($localFileName, filesize($localFile));
+
+        if(!$done) {
+            $msgs = [];
+            if(!$remoteExists) {
+                $msgs[] = 'does not exist';
+            }
+            if(!$remoteIsReadable) {
+                $msgs[] = 'is not readable';
+            }
+            $msg = 'File ' . implode(' and ', $msgs);
+
+            //if there was any issue at this point, we want to save it in localFile array and use it if needed more info
+            $this->setLocalFileError($localFileName, 404, $msg);
+        }
 
         return $done ? $localFile : false;
     }

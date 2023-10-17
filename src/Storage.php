@@ -11,6 +11,8 @@ class Storage
      */
     private $_driver = null;
 
+    private $_localFileKey;
+
     private $_localFile;
 
     private $_remoteFile;
@@ -20,13 +22,20 @@ class Storage
         $this->_driver = $driver;
     }
 
+    public function getDriver()
+    {
+        return $this->_driver;
+    }
+
     /**
      * @param string $value
      * @return \G4\Storage\Storage
      */
-    public function setLocalFile($value)
+    public function setLocalFile($value, $key = null)
     {
         $this->_localFile = $value;
+        $this->_localFileKey = $key;
+
         return $this;
     }
 
@@ -60,7 +69,7 @@ class Storage
 
     public function get()
     {
-        return $this->_driver->get($this->_localFile, $this->_remoteFile);
+        return $this->_driver->get($this->_localFile, $this->_remoteFile, false, $this->_localFileKey);
     }
 
     public function replace()

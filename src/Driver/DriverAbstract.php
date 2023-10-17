@@ -22,7 +22,7 @@ abstract class DriverAbstract implements DriverInterface
             return;
         }
 
-        foreach($this->_localFiles as $file) {
+        foreach($this->_localFiles as $file=>$data) {
             $localPath = $this->_buildLocalPath($file);
             if(file_exists($localPath)){
                 unlink($localPath);
@@ -75,11 +75,53 @@ abstract class DriverAbstract implements DriverInterface
         return $this;
     }
 
-    protected function _addLocalFile($file)
+    protected function _addLocalFile($file, $key = null)
     {
-        if(!in_array($file, $this->_localFiles)) {
-            $this->_localFiles[] = $file;
+        if(!array_key_exists($file, $this->_localFiles)) {
+            $this->_localFiles[$file] = [
+                'key'       => $key,
+                'path'      => null,
+                'size'      => null,
+                'error_no'  => null,
+                'error_msg' => null,
+            ];
         }
+    }
+
+    public function setLocalFilePath($fileName, $value)
+    {
+        $this->_localFiles[$fileName]['path'] = $value;
+    }
+
+    public function getLocalFilePath($key)
+    {
+        return $this->getFileInfoFromKey($key, 'path');
+    }
+
+    public function setLocalFileSize($fileName, $value)
+    {
+        $this->_localFiles[$fileName]['size'] = $value;
+    }
+
+    public function getLocalFileSize($key)
+    {
+        return $this->getFileInfoFromKey($key, 'size');
+    }
+
+    public function setLocalFileError($fileName, $errorNo, $errorMsg)
+    {
+        $this->_localFiles[$fileName]['error_no'] = $errorNo;
+        $this->_localFiles[$fileName]['error_msg'] = $errorMsg;
+    }
+
+    public function getLocalFileErrorNo($key)
+    {
+        return $this->getFileInfoFromKey($key, 'error_no');
+    }
+
+    public function getLocalFileErrorMsg($key)
+    {
+        return $this->getFileInfoFromKey($key, 'error_msg');
     }
 
     /**
@@ -127,4 +169,15 @@ abstract class DriverAbstract implements DriverInterface
         return $path;
     }
 
+
+    private function getFileInfoFromKey($key, $infoIndex)
+    {
+        $return = [];
+        foreach ($this->_localFiles as $fileName=>$fileInfo) {
+            if($fileInfo['key'] === $key) {
+                $return[] = $fileInfo[$infoIndex];
+            }
+        }
+        return $return;
+    }
 }
