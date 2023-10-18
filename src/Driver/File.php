@@ -40,14 +40,14 @@ class File extends DriverAbstract
         $remoteFile = $this->_buildRemotePath($remoteFile);
 
         $remoteExists = file_exists($remoteFile);
-        $remoteIsReadable = is_readable($remoteFile);
+        $remoteIsReadable = $remoteExists ? is_readable($remoteFile) : false;
 
         $done = ($remoteExists && $remoteIsReadable)
             ? copy($remoteFile, $localFile)
             : false;
 
         //since we're allowing copying of zero size file, we want to know the size of saved local file
-        $this->setLocalFileSize($localFileName, filesize($localFile));
+        $this->setLocalFileSize($localFileName, file_exists($localFile) ? filesize($localFile) : 0);
 
         if(!$done) {
             $msgs = [];
