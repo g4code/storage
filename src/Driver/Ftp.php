@@ -86,19 +86,19 @@ class Ftp extends DriverAbstract
         $localFile = $this->_buildLocalPath($localFileName);
         $this->setLocalFilePath($localFileName, $localFile);
 
-        $ftpSize = ftp_size($this->_connect(), $remoteFile) > -1;
-        $ftpDownloaded = ftp_get($this->_connect(), $localFile, $remoteFile, FTP_BINARY);
+        $ftpRemoteExists = ftp_size($this->_connect(), $remoteFile) > -1;
+        $ftpDownloaded = $ftpRemoteExists ? ftp_get($this->_connect(), $localFile, $remoteFile, FTP_BINARY) : false;
 
-        $done = ($ftpSize && $ftpDownloaded)
+        $done = ($ftpRemoteExists && $ftpDownloaded)
             ? $localFile
             : false;
 
         //since we're allowing copying of zero size file, we want to know the size of saved local file
-        $this->setLocalFileSize($localFileName, filesize($localFile));
+        $this->setLocalFileSize($localFileName, file_exists($localFile) ? filesize($localFile) : 0);
 
         if(!$done) {
             $msgs = [];
-            if(!$ftpSize) {
+            if(!$ftpRemoteExists) {
                 $msgs[] = 'remote does not exist';
             }
             if(!$ftpDownloaded) {
@@ -129,8 +129,11 @@ class Ftp extends DriverAbstract
 
         $done = ftp_put($this->_connect(), $remoteFile, $localFile, FTP_BINARY);
 
-        if (filesize($localFile) != ftp_size($this->_connect(), $remoteFile)) {
-            throw new \Exception('FTP uploaded remote file size mismatch');
+        $localSize = filesize($localFile);
+        $remoteSize = ftp_size($this->_connect(), $remoteFile);
+
+        if ($localSize != $remoteSize) {
+            throw new \Exception("FTP uploaded remote file size mismatch. Local size: $localSize, remote size $remoteSize");
         }
 
         ftp_chdir($this->_connect(), '/');
