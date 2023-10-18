@@ -86,10 +86,10 @@ class Ftp extends DriverAbstract
         $localFile = $this->_buildLocalPath($localFileName);
         $this->setLocalFilePath($localFileName, $localFile);
 
-        $ftpSize = ftp_size($this->_connect(), $remoteFile) > -1;
-        $ftpDownloaded = $ftpSize ? ftp_get($this->_connect(), $localFile, $remoteFile, FTP_BINARY) : $ftpSize;
+        $ftpRemoteExists = ftp_size($this->_connect(), $remoteFile) > -1;
+        $ftpDownloaded = $ftpRemoteExists ? ftp_get($this->_connect(), $localFile, $remoteFile, FTP_BINARY) : false;
 
-        $done = ($ftpSize && $ftpDownloaded)
+        $done = ($ftpRemoteExists && $ftpDownloaded)
             ? $localFile
             : false;
 
@@ -98,7 +98,7 @@ class Ftp extends DriverAbstract
 
         if(!$done) {
             $msgs = [];
-            if(!$ftpSize) {
+            if(!$ftpRemoteExists) {
                 $msgs[] = 'remote does not exist';
             }
             if(!$ftpDownloaded) {
